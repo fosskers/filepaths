@@ -1,11 +1,11 @@
 (defsystem "filepaths"
   :version "0.0.1"
-  :author ""
-  :license ""
+  :author "Colin Woodbury <colin@fosskers.ca>"
+  :license "LGPL-3.0-only"
   :depends-on ()
   :components ((:module "src"
                 :components
-                ((:file "main"))))
+                ((:file "filepaths"))))
   :description ""
   :in-order-to ((test-op (test-op "filepaths/tests"))))
 
