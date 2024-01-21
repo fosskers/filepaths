@@ -47,7 +47,7 @@
   (if (pathnamep path)
       (eq :absolute (car (pathname-directory path)))
       (and (< 0 (length path))
-           (equal +separator+ (aref path 0)))))
+           (equal +separator+ (char path 0)))))
 
 #+nil
 (absolutep #p"/home/colin/foo.txt")
@@ -70,27 +70,30 @@
 #+nil
 (relativep #p"foo.txt")
 
-(defun directoryp (path)
+(defun directory-exists-p (path)
   "Does the given PATH exist on the file system and point to a directory?")
 
-(declaim (ftype (function ((or pathname string)) boolean) directory-formatted-p))
-(defun directory-formatted-p (path)
-  "Yields non-nil if the PATH ends in a path separator."
+(declaim (ftype (function ((or pathname string)) boolean) directoryp))
+(defun directoryp (path)
+  "Yields T if the PATH represents a directory.
+
+Note that this only checks the formatting of the path, and does not query the
+filesystem."
   (if (pathnamep path)
       (and (not (null (pathname-directory path)))
            (not (pathname-name path)))
       (equal +separator+ (char path (1- (length path))))))
 
 #+nil
-(directory-formatted-p #p"/foo/bar/")
+(directoryp #p"/foo/bar/")
 #+nil
-(directory-formatted-p #p"/foo/bar/baz.txt")
+(directoryp #p"/foo/bar/baz.txt")
 #+nil
-(directory-formatted-p "/foo/bar/")
+(directoryp "/foo/bar/")
 #+nil
-(directory-formatted-p "/foo/bar/baz.txt")
+(directoryp "/foo/bar/baz.txt")
 
-(defun filep (path)
+(defun file-exists-p (path)
   "Does the given PATH exist on the file system and point to a normal file?")
 
 (declaim (ftype (function ((or pathname string)) simple-string) base))
@@ -147,7 +150,7 @@
   (cond ((emptyp path) (error 'empty-path))
         ((rootp path)  (error 'root-no-parent))
         (t (let* ((s (to-string path))
-                  (path (if (directory-formatted-p s)
+                  (path (if (directoryp s)
                             (string-right-trim "/" s)
                             s)))
              (from-string (directory-namestring path))))))
@@ -210,7 +213,7 @@
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
   "Every component of a PATH broken up as a list."
-  (if (directory-formatted-p path)
+  (if (directoryp path)
       (cdr (pathname-directory path))
       (let* ((ext  (extension path))
              (file (if ext (concatenate 'string (base path) "." ext) (base path))))
