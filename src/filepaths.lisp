@@ -3,6 +3,31 @@
 
 (in-package :filepaths)
 
+(defvar +empty-path+ #p"")
+(defvar +filesystem-root+ #p"/")
+
+(declaim (ftype (function ((or pathname string)) boolean) rootp))
+(defun rootp (path)
+  "Is the given PATH the root directory?"
+  (or (and (stringp path)
+           (string-equal "/" path))
+      (and (pathnamep path)
+           (equal +filesystem-root+ path))))
+
+#+nil
+(rootp #p"/")
+
+(declaim (ftype (function ((or pathname string)) boolean) emptyp))
+(defun emptyp (path)
+  "Is the given PATH an empty string?"
+  (or (and (stringp path)
+           (= 0 (length path)))
+      (and (pathnamep path)
+           (equal +empty-path+ path))))
+
+#+nil
+(emptyp #p"")
+
 (defun existsp (path)
   "Does a PATH exist on the filesystem?")
 
@@ -35,6 +60,16 @@
 
 (defun directoryp (path)
   "Does the given PATH exist on the file system and point to a directory?")
+
+(defun directory-formatted-p (path)
+  "Yields non-nil if the PATH ends in a path separator."
+  (let* ((path (if (stringp path) path (to-string path))))
+    (equal #\/ (char path (1- (length path))))))
+
+#+nil
+(directory-formatted-p #p"/foo/bar/")
+#+nil
+(directory-formatted-p #p"/foo/bar/baz.txt")
 
 (defun filep (path)
   "Does the given PATH exist on the file system and point to a normal file?")
@@ -126,3 +161,17 @@ or empty string instead.")
   (:report (lambda (condition stream)
              (format stream "The given path was expected to be a filename: ~a"
                      (no-filename-path condition)))))
+
+(define-condition empty-path (error)
+  ()
+  (:documentation "A non-empty path was expected, but an empty one was given.")
+  (:report (lambda (condition stream)
+             (declare (ignore condition))
+             (format stream "Empty path given where a concrete one was expected."))))
+
+(define-condition root-no-parent (error)
+  ()
+  (:documentation "The filesystem root has no parent.")
+  (:report (lambda (condition stream)
+             (declare (ignore condition))
+             (format stream "The filesystem root has no parent."))))
