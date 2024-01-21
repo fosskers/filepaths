@@ -73,15 +73,22 @@
 (defun directoryp (path)
   "Does the given PATH exist on the file system and point to a directory?")
 
+(declaim (ftype (function ((or pathname string)) boolean) directory-formatted-p))
 (defun directory-formatted-p (path)
   "Yields non-nil if the PATH ends in a path separator."
-  (let* ((path (if (stringp path) path (to-string path))))
-    (equal +separator+ (char path (1- (length path))))))
+  (if (pathnamep path)
+      (and (not (null (pathname-directory path)))
+           (not (pathname-name path)))
+      (equal +separator+ (char path (1- (length path))))))
 
 #+nil
 (directory-formatted-p #p"/foo/bar/")
 #+nil
 (directory-formatted-p #p"/foo/bar/baz.txt")
+#+nil
+(directory-formatted-p "/foo/bar/")
+#+nil
+(directory-formatted-p "/foo/bar/baz.txt")
 
 (defun filep (path)
   "Does the given PATH exist on the file system and point to a normal file?")
@@ -162,8 +169,15 @@
 (defun with-parent (path parent)
   "Swap the parent portion of a PATH")
 
+(declaim (ftype (function ((or pathname string)) (or simple-string null)) extension))
 (defun extension (path)
-  "The extension of a given PATH.")
+  "The extension of a given PATH."
+  (pathname-type path))
+
+#+nil
+(extension #p"/foo/bar.json")
+#+nil
+(extension #p"/")
 
 (defun with-extension (path ext)
   "Swap the entire extension of a given PATH.")
@@ -175,10 +189,38 @@
   "Add an extension to the given path, even if it already has one.")
 
 (defun join (parent child &rest components)
-  "Combine two or more components together.")
+  "Combine two or more components together."
+  (let* ((combined   (cons child components))
+         (final      (car (last combined)))
+         (rest       (butlast combined))
+         (abs-or-rel (if (absolutep parent) :absolute :relative)))
+    (make-pathname :name (base final)
+                   :type (extension final)
+                   :directory (cons abs-or-rel
+                                    (append (components parent)
+                                            rest)))))
 
+#+nil
+(join "/foo" "bar" "baz" "test.json")
+#+nil
+(join #p"/bar/baz/" #p"foo.json")
+#+nil
+(join #p"/bar/baz" #p"foo.json")
+
+(declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
-  "Every component of a PATH broken up as a list.")
+  "Every component of a PATH broken up as a list."
+  (if (directory-formatted-p path)
+      (cdr (pathname-directory path))
+      (let* ((ext  (extension path))
+             (file (if ext (concatenate 'string (base path) "." ext) (base path))))
+        (append (cdr (pathname-directory path))
+                (list file)))))
+
+#+nil
+(components #p"/foo/bar/baz.json")
+#+nil
+(components "/foo/bar/baz.json")
 
 (declaim (ftype (function (pathname) simple-string) to-string))
 (defun to-string (path)
