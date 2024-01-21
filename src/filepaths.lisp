@@ -41,18 +41,29 @@
 (defun ends-with-p (path child)
   "Is the final component of a PATH some given CHILD?")
 
+(declaim (ftype (function ((or pathname string)) boolean) absolutep))
 (defun absolutep (path)
-  "Yields non-nil when the given PATH a full, absolute path."
-  (uiop:absolute-pathname-p path))
+  "Yields T when the given PATH a full, absolute path."
+  (if (pathnamep path)
+      (eq :absolute (car (pathname-directory path)))
+      (and (< 0 (length path))
+           (equal +separator+ (aref path 0)))))
 
 #+nil
 (absolutep #p"/home/colin/foo.txt")
 #+nil
+(absolutep "/home/colin/foo.txt")
+#+nil
 (absolutep #p"foo.txt")
+#+nil
+(absolutep #p"")
+#+nil
+(absolutep "")
 
+(declaim (ftype (function (pathname) boolean) relativep))
 (defun relativep (path)
-  "Yields non-nil when the given PATH a relative one."
-  (uiop:relative-pathname-p path))
+  "Yields T when the given PATH a relative one."
+  (not (absolutep path)))
 
 #+nil
 (relativep #p"/home/colin/foo.txt")
