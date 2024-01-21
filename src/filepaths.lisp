@@ -114,9 +114,19 @@ filesystem."
 (base "/foo/bar/")
 #+nil
 (base 7)
+#+nil
+(base #p"/foo/bar/baz.txt.zip")
 
+(declaim (ftype (function ((or pathname string) string) pathname) with-base))
 (defun with-base (path new)
-  "Swap the base portion of a PATH with a NEW one.")
+  "Swap the base portion of a PATH with a NEW one. Yields a new path object."
+  (let ((path (ensure-path path)))
+    (make-pathname :name new
+                   :type (pathname-type path)
+                   :directory (pathname-directory path))))
+
+#+nil
+(with-base #p"/foo/bar/baz.txt" "jack")
 
 (declaim (ftype (function ((or pathname string)) simple-string) name))
 (defun name (path)
@@ -141,15 +151,23 @@ filesystem."
 #+nil
 (name 7)
 
+(declaim (ftype (function ((or pathname string) (or pathname string)) pathname) with-name))
 (defun with-name (path new)
-  "Swap the filename portion of a PATH with a NEW one.")
+  "Swap the filename portion of a PATH with a NEW one. Yields a new path object."
+  (let ((path (ensure-path path)))
+    (make-pathname :name (base new)
+                   :type (extension new)
+                   :directory (pathname-directory path))))
+
+#+nil
+(with-name #p"/foo/bar/baz.txt" "jack.json")
 
 (declaim (ftype (function ((or pathname string)) pathname) parent))
 (defun parent (path)
   "Yield PATH without its final component, if there is one."
   (cond ((emptyp path) (error 'empty-path))
         ((rootp path)  (error 'root-no-parent))
-        (t (let* ((s (to-string path))
+        (t (let* ((s (ensure-string path))
                   (path (if (directoryp s)
                             (string-right-trim "/" s)
                             s)))
@@ -157,6 +175,8 @@ filesystem."
 
 #+nil
 (parent #p"/foo/bar/baz.txt")
+#+nil
+(parent "/foo/bar/baz.txt")
 #+nil
 (parent #p"/foo/bar/")
 #+nil
@@ -182,18 +202,44 @@ filesystem."
 #+nil
 (extension #p"/")
 
+(declaim (ftype (function ((or pathname string) string) pathname) with-extension))
 (defun with-extension (path ext)
-  "Swap the entire extension of a given PATH.")
+  "Swap the entire extension of a given PATH. Yields a new path object."
+  (let ((path (ensure-path path)))
+    (make-pathname :name (pathname-name path)
+                   :type ext
+                   :directory (pathname-directory path))))
+
+#+nil
+(with-extension #p"/foo/bar/baz.txt" "json")
 
 (defun drop-extension (path)
   "Everything but the extension of a PATH.")
 
+(declaim (ftype (function ((or pathname string) string) pathname) add-extension))
 (defun add-extension (path ext)
-  "Add an extension to the given path, even if it already has one.")
+  "Add an extension to the given path, even if it already has one."
+  (let* ((path    (ensure-path path))
+         (already (extension path)))
+    (if already
+        ;; The pathname type only wants a single extension present in the
+        ;; `:type' field, or else there is strange behaviour elsewhere (for
+        ;; instance involving `to-string'). The old extension must thus become
+        ;; part of the stem, and the only value reported by `extension' is the
+        ;; new one, not the composite. This behaviour reflects that of Rust's
+        ;; standard library.
+        (make-pathname :name (concatenate 'string (base path) "." already)
+                       :type ext
+                       :directory (pathname-directory path))
+        (with-extension path ext))))
 
+#+nil
+(add-extension #p"/foo/bar/baz.txt" "zip")
+
+(declaim (ftype (function ((or pathname string) (or pathname string) &rest (or pathname string)) pathname) join))
 (defun join (parent child &rest components)
   "Combine two or more components together."
-  (let* ((combined   (cons child components))
+  (let* ((combined   (mapcar #'ensure-string (cons child components)))
          (final      (car (last combined)))
          (rest       (butlast combined))
          (abs-or-rel (if (absolutep parent) :absolute :relative)))
@@ -225,6 +271,11 @@ filesystem."
 #+nil
 (components "/foo/bar/baz.json")
 
+(declaim (ftype (function ((or pathname string)) simple-string) ensure-string))
+(defun ensure-string (path)
+  "A PATH is definitely a string after this."
+  (if (pathnamep path) (to-string path) path))
+
 (declaim (ftype (function (pathname) simple-string) to-string))
 (defun to-string (path)
   "Convert a PATH object into string."
@@ -232,6 +283,13 @@ filesystem."
 
 #+nil
 (to-string #p"/foo/bar/baz.txt")
+#+nil
+(pathname-type (to-string #p"/foo/bar/baz.txt.zip"))
+
+(declaim (ftype (function ((or pathname string)) pathname) ensure-path))
+(defun ensure-path (path)
+  "A PATH is definitely a pathname after this."
+  (if (pathnamep path) path (from-string path)))
 
 (declaim (ftype (function (string) pathname) from-string))
 (defun from-string (s)
