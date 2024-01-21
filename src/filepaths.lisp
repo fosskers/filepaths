@@ -5,6 +5,7 @@
 
 (defvar +empty-path+ #p"")
 (defvar +filesystem-root+ #p"/")
+(defvar +separator+ #\/)
 
 (declaim (ftype (function ((or pathname string)) boolean) rootp))
 (defun rootp (path)
@@ -41,7 +42,7 @@
   "Is the final component of a PATH some given CHILD?")
 
 (defun absolutep (path)
-  "Is the given PATH a full, absolute path?"
+  "Yields non-nil when the given PATH a full, absolute path."
   (uiop:absolute-pathname-p path))
 
 #+nil
@@ -50,7 +51,7 @@
 (absolutep #p"foo.txt")
 
 (defun relativep (path)
-  "Is the given PATH a relative one?"
+  "Yields non-nil when the given PATH a relative one."
   (uiop:relative-pathname-p path))
 
 #+nil
@@ -64,7 +65,7 @@
 (defun directory-formatted-p (path)
   "Yields non-nil if the PATH ends in a path separator."
   (let* ((path (if (stringp path) path (to-string path))))
-    (equal #\/ (char path (1- (length path))))))
+    (equal +separator+ (char path (1- (length path))))))
 
 #+nil
 (directory-formatted-p #p"/foo/bar/")
@@ -122,11 +123,33 @@
 (defun with-name (path new)
   "Swap the filename portion of a PATH with a NEW one.")
 
-(defun directory (path)
-  "Yield PATH without its final component, if there is one.")
+(declaim (ftype (function ((or pathname string)) pathname) parent))
+(defun parent (path)
+  "Yield PATH without its final component, if there is one."
+  (cond ((emptyp path) (error 'empty-path))
+        ((rootp path)  (error 'root-no-parent))
+        (t (let* ((s (to-string path))
+                  (path (if (directory-formatted-p s)
+                            (string-right-trim "/" s)
+                            s)))
+             (from-string (directory-namestring path))))))
 
-(defun with-directory (path parent)
-  "Swap the directory portion of a PATH")
+#+nil
+(parent #p"/foo/bar/baz.txt")
+#+nil
+(parent #p"/foo/bar/")
+#+nil
+(parent #p"/foo/")
+#+nil
+(parent #p"/")
+#+nil
+(parent "")
+
+#+nil
+(cdr (pathname-directory #p"/foo/bar/"))
+
+(defun with-parent (path parent)
+  "Swap the parent portion of a PATH")
 
 (defun extension (path)
   "The extension of a given PATH.")
@@ -146,11 +169,21 @@
 (defun components (path)
   "Every component of a PATH broken up as a list.")
 
+(declaim (ftype (function (pathname) simple-string) to-string))
 (defun to-string (path)
-  "Convert a PATH object into string.")
+  "Convert a PATH object into string."
+  (namestring path))
 
+#+nil
+(to-string #p"/foo/bar/baz.txt")
+
+(declaim (ftype (function (string) pathname) from-string))
 (defun from-string (s)
-  "Convert a string into a project filepath object.")
+  "Convert a string into a proper filepath object."
+  (pathname s))
+
+#+nil
+(from-string "/foo/bar/baz.txt")
 
 ;; --- Conditions --- ;;
 
