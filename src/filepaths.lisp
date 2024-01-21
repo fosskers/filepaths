@@ -217,8 +217,26 @@ filesystem."
 #+nil
 (with-extension #p"/foo/bar/" "json")
 
+(declaim (ftype (function ((or pathname string)) pathname) drop-extension))
 (defun drop-extension (path)
-  "Everything but the extension of a PATH.")
+  "Everything but the extension of a PATH."
+  (let* ((path (ensure-path path))
+         (stem (base path))
+         (ext  (extension stem))
+         (name (if ext (base stem) stem)))
+    ;; Similar to `add-extension', there's some cleverness here where we need to
+    ;; check if we must move an "inner" extension back outward. For instance, in
+    ;; the case of foo.json.zip. It looks like we're always setting `:type' to
+    ;; something concrete, but this will properly be NIL in the normal case
+    ;; where only one extension was present.
+    (make-pathname :name name
+                   :type ext
+                   :directory (pathname-directory path))))
+
+#+nil
+(drop-extension #p"/foo/bar/baz.json")
+#+nil
+(drop-extension #p"/foo/bar/baz.json.zip")
 
 (declaim (ftype (function ((or pathname string) string) pathname) add-extension))
 (defun add-extension (path ext)
