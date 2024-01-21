@@ -36,10 +36,22 @@
 ;;   "Is the given PATH an executable file?")
 
 (defun starts-with-p (path base)
-  "Is a PATH prefixed by a given BASE?")
+  "Are the initial components of a PATH some BASE?"
+  (let ((bools (mapcar #'equal (components path) (components base))))
+    (reduce (lambda (a b) (and a b)) bools :initial-value t)))
+
+#+nil
+(starts-with-p #p"/foo/bar/baz/zing.json" "/foo/bar")
 
 (defun ends-with-p (path child)
-  "Is the final component of a PATH some given CHILD?")
+  "Are the final components of a PATH some given CHILD?"
+  (let ((bools (mapcar #'equal
+                       (reverse (components path))
+                       (reverse (components child)))))
+    (reduce (lambda (a b) (and a b)) bools :initial-value t)))
+
+#+nil
+(ends-with-p #p"/foo/bar/baz/zing.json" "baz/zing.json")
 
 (declaim (ftype (function ((or pathname string)) boolean) absolutep))
 (defun absolutep (path)
