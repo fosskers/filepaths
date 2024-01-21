@@ -29,11 +29,11 @@
 #+nil
 (emptyp #p"")
 
-(defun existsp (path)
-  "Does a PATH exist on the filesystem?")
+;; (defun existsp (path)
+;;   "Does a PATH exist on the filesystem?")
 
-(defun executablep (path)
-  "Is the given PATH an executable file?")
+;; (defun executablep (path)
+;;   "Is the given PATH an executable file?")
 
 (defun starts-with-p (path base)
   "Is a PATH prefixed by a given BASE?")
@@ -70,8 +70,8 @@
 #+nil
 (relativep #p"foo.txt")
 
-(defun directory-exists-p (path)
-  "Does the given PATH exist on the file system and point to a directory?")
+;; (defun directory-exists-p (path)
+;;   "Does the given PATH exist on the file system and point to a directory?")
 
 (declaim (ftype (function ((or pathname string)) boolean) directoryp))
 (defun directoryp (path)
@@ -93,8 +93,8 @@ filesystem."
 #+nil
 (directoryp "/foo/bar/baz.txt")
 
-(defun file-exists-p (path)
-  "Does the given PATH exist on the file system and point to a normal file?")
+;; (defun file-exists-p (path)
+;;   "Does the given PATH exist on the file system and point to a normal file?")
 
 (declaim (ftype (function ((or pathname string)) simple-string) base))
 (defun base (path)
@@ -189,8 +189,13 @@ filesystem."
 #+nil
 (cdr (pathname-directory #p"/foo/bar/"))
 
+(declaim (ftype (function ((or pathname string) (or pathname string)) pathname) with-parent))
 (defun with-parent (path parent)
-  "Swap the parent portion of a PATH")
+  "Swap the parent portion of a PATH."
+  (join parent (name path)))
+
+#+nil
+(with-parent #p"/foo/bar/baz.json" #p"/zing")
 
 (declaim (ftype (function ((or pathname string)) (or simple-string null)) extension))
 (defun extension (path)
