@@ -206,12 +206,16 @@ filesystem."
 (defun with-extension (path ext)
   "Swap the entire extension of a given PATH. Yields a new path object."
   (let ((path (ensure-path path)))
-    (make-pathname :name (pathname-name path)
-                   :type ext
-                   :directory (pathname-directory path))))
+    (if (directoryp path)
+        (error 'no-filename :path path)
+        (make-pathname :name (base path)
+                       :type ext
+                       :directory (pathname-directory path)))))
 
 #+nil
 (with-extension #p"/foo/bar/baz.txt" "json")
+#+nil
+(with-extension #p"/foo/bar/" "json")
 
 (defun drop-extension (path)
   "Everything but the extension of a PATH.")
