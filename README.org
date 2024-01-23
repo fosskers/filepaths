@@ -10,9 +10,8 @@ It addresses three main issues found with the status quo, namely:
 - Clarity: Function names are often unintuitive.
 
 The =filepaths= library solves these issues by offering functions commonly found
-elsewhere while naming them what you'd generally expect them to be.
-
-Intuitive concatenation:
+elsewhere while naming them what you'd generally expect them to be. For
+instance:
 
 #+begin_src lisp
 (filepaths:join "/home/you/code" "common-lisp" "hello.lisp")
@@ -21,26 +20,10 @@ Intuitive concatenation:
 #+RESULTS:
 : #P"/home/you/code/common-lisp/hello.lisp"
 
-Swapping the extension:
+There are many more functions available.
 
-#+begin_src lisp
-(filepaths:with-extension #p"/home/you/code/common-lisp/hello.lisp" "txt")
-#+end_src
-
-#+RESULTS:
-: #P"/home/you/code/common-lisp/hello.txt"
-
-Swapping the directory portion:
-
-#+begin_src lisp
-(filepaths:with-parent #p"/home/you/code/common-lisp/hello.lisp" "/tmp")
-#+end_src
-
-#+RESULTS:
-: #P"/tmp/hello.lisp"
-
-And much more! Note that this library is currently _Unix only_ and doesn't offer
-functions for communicating with the filesystem to test if files exist, etc.
+Note that this library is currently _Unix only_ and doesn't offer functions for
+communicating with the filesystem to test if files exist, etc.
 
 * Installation
 
@@ -320,3 +303,8 @@ circumstances:
 * Further Work
 
 - Windows support
+
+* See Also
+
+- https://codeberg.org/fourier/ppath
+- https://quickdocs.org/uiop
