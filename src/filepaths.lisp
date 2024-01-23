@@ -256,7 +256,7 @@ filesystem."
 
 (declaim (ftype (function ((or pathname string)) pathname) drop-extension))
 (defun drop-extension (path)
-  "Everything but the extension of a PATH."
+  "Remove an extension from a PATH."
   (let* ((path (ensure-path path))
          (stem (base path))
          (ext  (extension stem))

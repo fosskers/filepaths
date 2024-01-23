@@ -54,6 +54,9 @@ It is recommended that you import this library with the nickname =path= or =p=.
 (:local-nicknames (:p :filepaths))
 #+end_src
 
+Note that nearly every function here can be passed either a =pathname= or a
+=string=.
+
 ** Structural Tests
 
 *** rootp, emptyp
@@ -135,8 +138,184 @@ Combine two or more components together.
 : #P"/bar/baz/foo.json"
 
 ** Component Access
+
+*** base, with-base
+
+ The non-extension, non-directory portion of the filename of a PATH.
+
+#+begin_src lisp
+(filepaths:base #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: baz
+
+Swap the base portion of a PATH with a NEW one. Yields a new path object.
+
+#+begin_src lisp
+(filepaths:with-base #p"/foo/bar/baz.txt" "jack")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/jack.txt"
+
+*** name, with-name
+
+The filename of a PATH with no other directory components.
+
+#+begin_src lisp
+(filepaths:name #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: baz.txt
+
+Swap the filename portion of a PATH with a NEW one. Yields a new path object.
+
+#+begin_src lisp
+(filepaths:with-name #p"/foo/bar/baz.txt" "jack.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/jack.json"
+
+*** parent, with-parent
+
+Yield PATH without its final component, if there is one.
+
+#+begin_src lisp
+(filepaths:parent #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/"
+
+Swap the parent portion of a PATH.
+
+#+begin_src lisp
+(filepaths:with-parent #p"/foo/bar/baz.json" #p"/zing")
+#+end_src
+
+#+RESULTS:
+: #P"/zing/baz.json"
+
+*** extension, with-extension, add-extension, drop-extension
+
+The extension of a given PATH.
+
+#+begin_src lisp
+(filepaths:extension #p"/foo/bar.json")
+#+end_src
+
+#+RESULTS:
+: json
+
+Swap the entire extension of a given PATH. Yields a new path object.
+
+#+begin_src lisp
+(filepaths:with-extension #p"/foo/bar/baz.txt" "json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.json"
+
+
+Add an extension to the given path, even if it already has one.
+
+#+begin_src lisp
+(filepaths:add-extension #p"/foo/bar/baz.txt" "zip")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.txt.zip"
+
+Remove an extension from a PATH.
+
+#+begin_src lisp
+(filepaths:drop-extension #p"/foo/bar/baz.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz"
+
+#+begin_src lisp
+(filepaths:drop-extension #p"/foo/bar/baz.json.zip")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.json"
+
 ** Conversion
+
+*** components
+
+Every component of a PATH broken up as a list.
+
+#+begin_src lisp :results verbatim
+(filepaths:components #p"/foo/bar/baz.json")
+#+end_src
+
+#+RESULTS:
+: ("foo" "bar" "baz.json")
+
+*** ensure-directory, ensure-string, ensure-path
+
+If a given PATH doesn't end in a path separator, add one.
+
+#+begin_src lisp
+(filepaths:ensure-directory #p"/foo/bar/baz")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/"
+
+A PATH is definitely a string after this.
+
+#+begin_src lisp :results verbatim
+(type-of (filepaths:ensure-string #p"/foo/bar"))
+#+end_src
+
+#+RESULTS:
+: (SIMPLE-BASE-STRING 8)
+
+A PATH is definitely a pathname after this.
+
+#+begin_src lisp
+(type-of (filepaths:ensure-path "/foo/bar"))
+#+end_src
+
+#+RESULTS:
+: PATHNAME
+
+*** to-string, from-string
+
+Convert a PATH object into string.
+
+#+begin_src lisp
+(filepaths:to-string #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: /foo/bar/baz.txt
+
+Convert a string into a proper filepath object.
+
+#+begin_src lisp
+(filepaths:from-string "/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.txt"
+
 ** Conditions
+
+For certain functions in this library, it is not appropriate to return =nil= in
+case of an error. The following conditions are thus triggered under certain
+circumstances:
+
+- =no-filename=
+- =empty-path=
+- =root-no-parent=
 
 * Further Work
 
