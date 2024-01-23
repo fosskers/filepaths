@@ -5,13 +5,13 @@
            #:starts-with-p #:ends-with-p
            #:absolutep #:relativep
            #:directoryp)
+  ;; --- Construction --- ;;
+  (:export #:join)
   ;; --- Component Access --- ;;
   (:export #:base #:with-base
            #:name #:with-name
            #:parent #:with-parent
            #:extension #:with-extension #:drop-extension #:add-extension)
-  ;; --- Construction --- ;;
-  (:export #:join)
   ;; --- Conversion --- ;;
   (:export #:components
            #:ensure-directory #:ensure-string #:ensure-path

@@ -44,6 +44,22 @@ functions for communicating with the filesystem to test if files exist, etc.
 
 * Installation
 
+This library has no external dependencies. It only uses standard library functionality.
+
 * Usage
 
+It is recommended that you import this library with the nickname =path= or =p=.
+
+#+begin_src lisp
+(:local-nicknames (:p :filepaths))
+#+end_src
+
+** Structural Tests
+** Construction
+** Component Access
+** Conversion
+** Conditions
+
 * Further Work
+
+- Windows support
