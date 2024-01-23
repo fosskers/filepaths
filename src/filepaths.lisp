@@ -19,7 +19,8 @@
   ;; --- Conditions --- ;;
   (:export #:no-filename
            #:empty-path
-           #:root-no-parent))
+           #:root-no-parent)
+  (:documentation "Modern and consistent filepath manipulation."))
 
 (in-package :filepaths)
 
