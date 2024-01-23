@@ -1,5 +1,25 @@
 (defpackage filepaths
-  (:use :cl))
+  (:use :cl)
+  ;; --- Structural tests --- ;;
+  (:export #:rootp #:emptyp
+           #:starts-with-p #:ends-with-p
+           #:absolutep #:relativep
+           #:directoryp)
+  ;; --- Component Access --- ;;
+  (:export #:base #:with-base
+           #:name #:with-name
+           #:parent #:with-parent
+           #:extension #:with-extension #:drop-extension #:add-extension)
+  ;; --- Construction --- ;;
+  (:export #:join)
+  ;; --- Conversion --- ;;
+  (:export #:components
+           #:ensure-directory #:ensure-string #:ensure-path
+           #:to-string #:from-string)
+  ;; --- Conditions --- ;;
+  (:export #:no-filename
+           #:empty-path
+           #:root-no-parent))
 
 (in-package :filepaths)
 

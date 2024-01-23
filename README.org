@@ -3,7 +3,7 @@
 Inspired by [[https://github.com/vindarel/cl-str][str]], this library offers modern and consistent filepath manipulation
 for Common Lisp.
 
-It addresses three main issues with the status quo:
+It addresses three main issues found with the status quo, namely:
 
 - Centrality: Functionality is spread across the standard library and =uiop=.
 - Completeness: A number of common operations found in newer languages are missing entirely.
@@ -15,7 +15,7 @@ elsewhere while naming them what you'd generally expect them to be.
 Intuitive concatenation:
 
 #+begin_src lisp
-(filepaths::join "/home/you/code" "common-lisp" "hello.lisp")
+(filepaths:join "/home/you/code" "common-lisp" "hello.lisp")
 #+end_src
 
 #+RESULTS:
@@ -24,7 +24,7 @@ Intuitive concatenation:
 Swapping the extension:
 
 #+begin_src lisp
-(filepaths::with-extension #p"/home/you/code/common-lisp/hello.lisp" "txt")
+(filepaths:with-extension #p"/home/you/code/common-lisp/hello.lisp" "txt")
 #+end_src
 
 #+RESULTS:
@@ -33,7 +33,7 @@ Swapping the extension:
 Swapping the directory portion:
 
 #+begin_src lisp
-(filepaths::with-parent #p"/home/you/code/common-lisp/hello.lisp" "/tmp")
+(filepaths:with-parent #p"/home/you/code/common-lisp/hello.lisp" "/tmp")
 #+end_src
 
 #+RESULTS:
