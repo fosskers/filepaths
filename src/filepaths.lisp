@@ -310,6 +310,24 @@ filesystem."
 #+nil
 (components "/foo/bar/baz.json")
 
+(declaim (ftype (function ((or pathname string)) pathname) ensure-directory))
+(defun ensure-directory (path)
+  "If a given PATH doesn't end in a path separator, add one."
+  (let ((path (ensure-path path)))
+    (if (directoryp path)
+        path
+        (make-pathname :name nil
+                       :type nil
+                       :directory (append (pathname-directory path)
+                                          (list (name path)))))))
+
+#+nil
+(ensure-directory #p"/foo/bar/baz/")
+#+nil
+(ensure-directory #p"/foo/bar/baz")
+#+nil
+(ensure-directory #p"/foo/bar/baz.json")
+
 (declaim (ftype (function ((or pathname string)) simple-string) ensure-string))
 (defun ensure-string (path)
   "A PATH is definitely a string after this."
