@@ -55,7 +55,85 @@ It is recommended that you import this library with the nickname =path= or =p=.
 #+end_src
 
 ** Structural Tests
+
+*** rootp, emptyp
+
+Is the given PATH the root directory?
+
+#+begin_src lisp
+(filepaths:rootp #p"/")
+#+end_src
+
+#+RESULTS:
+: T
+
+Is the given PATH an empty string?
+
+#+begin_src lisp
+(filepaths:emptyp #p"")
+#+end_src
+
+#+RESULTS:
+: T
+
+*** starts-with-p, ends-with-p
+
+Are the initial components of a PATH some BASE?
+
+#+begin_src lisp
+(filepaths:starts-with-p #p"/foo/bar/baz/zing.json" "/foo/bar")
+#+end_src
+
+#+RESULTS:
+: T
+
+Are the final components of a PATH some given CHILD?
+
+#+begin_src lisp
+(filepaths:ends-with-p #p"/foo/bar/baz/zing.json" "baz/zing.json")
+#+end_src
+
+#+RESULTS:
+: T
+
+*** directoryp
+
+Yields T if the PATH represents a directory.
+
+#+begin_src lisp
+(filepaths:directoryp #p"/foo/bar/")
+#+end_src
+
+#+RESULTS:
+: T
+
+#+begin_src lisp
+(filepaths:directoryp #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: NIL
+
 ** Construction
+
+*** join
+
+Combine two or more components together.
+
+#+begin_src lisp
+(filepaths:join "/foo" "bar" "baz" "test.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/test.json"
+
+#+begin_src lisp
+(filepaths:join #p"/bar/baz/" #p"foo.json")
+#+end_src
+
+#+RESULTS:
+: #P"/bar/baz/foo.json"
+
 ** Component Access
 ** Conversion
 ** Conditions
