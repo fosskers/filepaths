@@ -25,6 +25,10 @@ There are many more functions available.
 Note that this library is currently _Unix only_ and doesn't offer functions for
 communicating with the filesystem to test if files exist, etc.
 
+#+begin_quote
+✅ _This library has been confirmed to work with SBCL, ECL, and ABCL._
+#+end_quote
+
 * Installation
 
 This library has no external dependencies. It only uses standard library functionality.
