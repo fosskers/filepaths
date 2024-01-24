@@ -61,6 +61,25 @@ Is the given PATH an empty string?
 
 #+RESULTS:
 : T
+*** absolutep, relativep
+
+Yields T when the given PATH a full, absolute path.
+
+#+begin_src lisp
+(filepaths:absolutep "/home/colin/foo.txt")
+#+end_src
+
+#+RESULTS:
+: T
+
+Yields T when the given PATH a relative one.
+
+#+begin_src lisp
+(filepaths:relativep #p"bar/foo.txt")
+#+end_src
+
+#+RESULTS:
+: T
 
 *** starts-with-p, ends-with-p
 
