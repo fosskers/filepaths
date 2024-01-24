@@ -50,12 +50,6 @@
 #+nil
 (emptyp #p"")
 
-;; (defun existsp (path)
-;;   "Does a PATH exist on the filesystem?")
-
-;; (defun executablep (path)
-;;   "Is the given PATH an executable file?")
-
 (defun starts-with-p (path base)
   "Are the initial components of a PATH some BASE?"
   (let ((bools (mapcar #'equal (components path) (components base))))
@@ -83,19 +77,9 @@
            (equal +separator+ (char path 0)))))
 
 #+nil
-(absolutep #p"/home/colin/foo.txt")
-#+nil
 (absolutep "/home/colin/foo.txt")
-#+nil
-(absolutep #p"foo.txt")
-#+nil
-(absolutep #p"")
-#+nil
-(absolutep "")
-#+nil
-(absolutep #p"/")
 
-(declaim (ftype (function (pathname) boolean) relativep))
+(declaim (ftype (function ((or pathname string)) boolean) relativep))
 (defun relativep (path)
   "Yields T when the given PATH a relative one."
   (not (absolutep path)))
@@ -104,9 +88,6 @@
 (relativep #p"/home/colin/foo.txt")
 #+nil
 (relativep #p"foo.txt")
-
-;; (defun directory-exists-p (path)
-;;   "Does the given PATH exist on the file system and point to a directory?")
 
 (declaim (ftype (function ((or pathname string)) boolean) directoryp))
 (defun directoryp (path)
@@ -120,16 +101,9 @@ filesystem."
       (equal +separator+ (char path (1- (length path))))))
 
 #+nil
-(directoryp #p"/foo/bar/")
-#+nil
-(directoryp #p"/foo/bar/baz.txt")
-#+nil
 (directoryp "/foo/bar/")
 #+nil
 (directoryp "/foo/bar/baz.txt")
-
-;; (defun file-exists-p (path)
-;;   "Does the given PATH exist on the file system and point to a normal file?")
 
 (declaim (ftype (function ((or pathname string)) simple-string) base))
 (defun base (path)
@@ -140,17 +114,7 @@ filesystem."
         b)))
 
 #+nil
-(base #p"/foo/bar/baz.txt")
-#+nil
 (base "/foo/bar/baz.txt")
-#+nil
-(base #p"/foo/bar/ゆびわ.txt")
-#+nil
-(base "/foo/bar/")
-#+nil
-(base 7)
-#+nil
-(base #p"/foo/bar/baz.txt.zip")
 
 (declaim (ftype (function ((or pathname string) string) pathname) with-base))
 (defun with-base (path new)
@@ -172,19 +136,7 @@ filesystem."
         n)))
 
 #+nil
-(name #p"baz.txt")
-#+nil
-(name #p"/foo/bar/baz.txt")
-#+nil
 (name "/foo/bar/baz.txt")
-#+nil
-(name #p"/foo/bar/ゆびわ.txt")
-#+nil
-(name #p"/foo/bar/")
-#+nil
-(name "")
-#+nil
-(name 7)
 
 (declaim (ftype (function ((or pathname string) (or pathname string)) pathname) with-name))
 (defun with-name (path new)
@@ -209,20 +161,11 @@ filesystem."
              (from-string (directory-namestring path))))))
 
 #+nil
-(parent #p"/foo/bar/baz.txt")
-#+nil
 (parent "/foo/bar/baz.txt")
 #+nil
-(parent #p"/foo/bar/")
+(parent "/foo/bar/")
 #+nil
-(parent #p"/foo/")
-#+nil
-(parent #p"/")
-#+nil
-(parent "")
-
-#+nil
-(cdr (pathname-directory #p"/foo/bar/"))
+(parent "/foo/")
 
 (declaim (ftype (function ((or pathname string) (or pathname string)) pathname) with-parent))
 (defun with-parent (path parent)
@@ -318,39 +261,25 @@ filesystem."
 
 #+nil
 (join "/foo" "bar" "baz" "test.json")
-#+nil
-(join #p"/bar/baz/" #p"foo.json")
-#+nil
-(join #p"/bar/baz" #p"foo.json")
-#+nil
-(join "/foo" "" "bar" "/" "baz" "test.json")
-#+nil
-(join "/"  "bar" "baz" "test.json")
-#+nil
-(join "/foo" "/") ;; Expected to fail.
-#+nil
-(join "/foo" "") ;; Expected to fail.
 
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
   "Every component of a PATH broken up as a list."
-  (let* ((path (ensure-path path))
-         (list (if (directoryp path)
-                   (cdr (pathname-directory path))
-                   (let* ((ext  (extension path))
-                          (file (if ext (concatenate 'string (base path) "." ext) (base path))))
-                     (append (cdr (pathname-directory path))
-                             (list file))))))
-    (if (absolutep path)
-        (cons "/" list)
-        list)))
+  (if (emptyp path)
+      '()
+      (let* ((path (ensure-path path))
+             (list (if (directoryp path)
+                       (cdr (pathname-directory path))
+                       (let* ((ext  (extension path))
+                              (file (if ext (concatenate 'string (base path) "." ext) (base path))))
+                         (append (cdr (pathname-directory path))
+                                 (list file))))))
+        (if (absolutep path)
+            (cons "/" list)
+            list))))
 
 #+nil
 (components "/foo/bar/baz.json")
-#+nil
-(components "foo/bar/baz.json")
-#+nil
-(components "/")
 
 (declaim (ftype (function (list) pathname) from-list))
 (defun from-list (list)
@@ -363,13 +292,7 @@ filesystem."
             (apply #'join parent (car rest) (cdr rest))))))
 
 #+nil
-(from-list '())
-#+nil
-(from-list '("foo"))
-#+nil
 (from-list '("foo" "bar" "baz"))
-#+nil
-(from-list (components "/foo/bar/baz/file.txt"))
 
 (declaim (ftype (function ((or pathname string)) pathname) ensure-directory))
 (defun ensure-directory (path)
@@ -383,11 +306,7 @@ filesystem."
                                           (list (name path)))))))
 
 #+nil
-(ensure-directory #p"/foo/bar/baz/")
-#+nil
 (ensure-directory #p"/foo/bar/baz")
-#+nil
-(ensure-directory #p"/foo/bar/baz.json")
 
 (declaim (ftype (function ((or pathname string)) simple-string) ensure-string))
 (defun ensure-string (path)
@@ -399,11 +318,6 @@ filesystem."
   "Convert a PATH object into string."
   (namestring path))
 
-#+nil
-(to-string #p"/foo/bar/baz.txt")
-#+nil
-(pathname-type (to-string #p"/foo/bar/baz.txt.zip"))
-
 (declaim (ftype (function ((or pathname string)) pathname) ensure-path))
 (defun ensure-path (path)
   "A PATH is definitely a pathname after this."
@@ -413,9 +327,6 @@ filesystem."
 (defun from-string (s)
   "Convert a string into a proper filepath object."
   (pathname s))
-
-#+nil
-(from-string "/foo/bar/baz.txt")
 
 ;; --- Conditions --- ;;
 
