@@ -301,14 +301,18 @@ filesystem."
 (declaim (ftype (function ((or pathname string) (or pathname string) &rest (or pathname string)) pathname) join))
 (defun join (parent child &rest components)
   "Combine two or more components together."
-  (let* ((combined   (mapcar #'ensure-string (cons child components)))
+  (let* ((parent     (ensure-path parent))
+         (combined   (mapcar #'ensure-string (cons child components)))
          (final      (car (last combined)))
          (rest       (butlast combined))
-         (abs-or-rel (if (absolutep parent) :absolute :relative)))
+         (abs-or-rel (if (absolutep parent) :absolute :relative))
+         (par-comps  (components parent)))
     (make-pathname :name (base final)
                    :type (extension final)
                    :directory (cons abs-or-rel
-                                    (append (components parent)
+                                    (append (if (absolutep parent)
+                                                (cdr par-comps)
+                                                par-comps)
                                             rest)))))
 
 #+nil
