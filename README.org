@@ -1,5 +1,7 @@
 #+title: filepaths
 
+(This README is best viewed on [[https://codeberg.org/fosskers/filepaths][Codeberg]]).
+
 Inspired by [[https://github.com/vindarel/cl-str][str]], this library offers modern and consistent filepath manipulation
 for Common Lisp.
 
