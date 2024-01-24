@@ -13,7 +13,7 @@
            #:parent #:with-parent
            #:extension #:with-extension #:drop-extension #:add-extension)
   ;; --- Conversion --- ;;
-  (:export #:components
+  (:export #:components #:from-list
            #:ensure-directory #:ensure-string #:ensure-path
            #:to-string #:from-string)
   ;; --- Conditions --- ;;
@@ -302,7 +302,7 @@ filesystem."
 (defun join (parent child &rest components)
   "Combine two or more components together."
   (let* ((parent     (ensure-path parent))
-         (combined   (remove-if (lambda (s) (string-equal "/" s))
+         (combined   (remove-if (lambda (s) (string-equal +separator+ s))
                                 (mapcar #'ensure-string (cons child components))))
          (final      (car (last combined)))
          (rest       (butlast combined))
@@ -325,7 +325,11 @@ filesystem."
 #+nil
 (join "/foo" "" "bar" "/" "baz" "test.json")
 #+nil
+(join "/"  "bar" "baz" "test.json")
+#+nil
 (join "/foo" "/") ;; Expected to fail.
+#+nil
+(join "/foo" "") ;; Expected to fail.
 
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
@@ -347,6 +351,25 @@ filesystem."
 (components "foo/bar/baz.json")
 #+nil
 (components "/")
+
+(declaim (ftype (function (list) pathname) from-list))
+(defun from-list (list)
+  "Given a LIST of path components, construct a proper pathname object."
+  (if (null list)
+      #p""
+      (destructuring-bind (parent &rest rest) list
+        (if (null rest)
+            (ensure-path parent)
+            (apply #'join parent (car rest) (cdr rest))))))
+
+#+nil
+(from-list '())
+#+nil
+(from-list '("foo"))
+#+nil
+(from-list '("foo" "bar" "baz"))
+#+nil
+(from-list (components "/foo/bar/baz/file.txt"))
 
 (declaim (ftype (function ((or pathname string)) pathname) ensure-directory))
 (defun ensure-directory (path)

@@ -230,7 +230,7 @@ Remove an extension from a PATH.
 
 ** Conversion
 
-*** components
+*** components, from-list
 
 Every component of a PATH broken up as a list.
 
@@ -240,6 +240,22 @@ Every component of a PATH broken up as a list.
 
 #+RESULTS:
 : ("/" "foo" "bar" "baz.json")
+
+Given a LIST of path components, construct a proper pathname object.
+
+#+begin_src lisp
+(filepaths:from-list '("foo" "bar" "baz"))
+#+end_src
+
+#+RESULTS:
+: #P"foo/bar/baz"
+
+#+begin_src lisp
+(filepaths:from-list (filepaths:components "/foo/bar/baz/file.txt"))
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/file.txt"
 
 *** ensure-directory, ensure-string, ensure-path
 
