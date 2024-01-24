@@ -239,7 +239,7 @@ Every component of a PATH broken up as a list.
 #+end_src
 
 #+RESULTS:
-: ("foo" "bar" "baz.json")
+: ("/" "foo" "bar" "baz.json")
 
 *** ensure-directory, ensure-string, ensure-path
 

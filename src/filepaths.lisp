@@ -92,6 +92,8 @@
 (absolutep #p"")
 #+nil
 (absolutep "")
+#+nil
+(absolutep #p"/")
 
 (declaim (ftype (function (pathname) boolean) relativep))
 (defun relativep (path)
@@ -319,17 +321,23 @@ filesystem."
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
   "Every component of a PATH broken up as a list."
-  (if (directoryp path)
-      (cdr (pathname-directory path))
-      (let* ((ext  (extension path))
-             (file (if ext (concatenate 'string (base path) "." ext) (base path))))
-        (append (cdr (pathname-directory path))
-                (list file)))))
+  (let* ((path (ensure-path path))
+         (list (if (directoryp path)
+                   (cdr (pathname-directory path))
+                   (let* ((ext  (extension path))
+                          (file (if ext (concatenate 'string (base path) "." ext) (base path))))
+                     (append (cdr (pathname-directory path))
+                             (list file))))))
+    (if (absolutep path)
+        (cons "/" list)
+        list)))
 
 #+nil
-(components #p"/foo/bar/baz.json")
-#+nil
 (components "/foo/bar/baz.json")
+#+nil
+(components "foo/bar/baz.json")
+#+nil
+(components "/")
 
 (declaim (ftype (function ((or pathname string)) pathname) ensure-directory))
 (defun ensure-directory (path)
