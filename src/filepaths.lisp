@@ -122,7 +122,8 @@ filesystem."
   (let ((path (ensure-path path)))
     (make-pathname :name new
                    :type (pathname-type path)
-                   :directory (pathname-directory path))))
+                   :directory (pathname-directory path)
+                   :version :newest)))
 
 #+nil
 (with-base #p"/foo/bar/baz.txt" "jack")
@@ -144,7 +145,8 @@ filesystem."
   (let ((path (ensure-path path)))
     (make-pathname :name (base new)
                    :type (extension new)
-                   :directory (pathname-directory path))))
+                   :directory (pathname-directory path)
+                   :version :newest)))
 
 #+nil
 (with-name #p"/foo/bar/baz.txt" "jack.json")
@@ -193,7 +195,8 @@ filesystem."
         (error 'no-filename :path path)
         (make-pathname :name (base path)
                        :type ext
-                       :directory (pathname-directory path)))))
+                       :directory (pathname-directory path)
+                       :version :newest))))
 
 #+nil
 (with-extension #p"/foo/bar/baz.txt" "json")
@@ -214,7 +217,8 @@ filesystem."
     ;; where only one extension was present.
     (make-pathname :name name
                    :type ext
-                   :directory (pathname-directory path))))
+                   :directory (pathname-directory path)
+                   :version :newest)))
 
 #+nil
 (drop-extension #p"/foo/bar/baz.json")
@@ -235,7 +239,8 @@ filesystem."
         ;; standard library.
         (make-pathname :name (concatenate 'string (base path) "." already)
                        :type ext
-                       :directory (pathname-directory path))
+                       :directory (pathname-directory path)
+                       :version :newest)
         (with-extension path ext))))
 
 #+nil
@@ -245,7 +250,9 @@ filesystem."
 (defun join (parent child &rest components)
   "Combine two or more components together."
   (let* ((parent     (ensure-path parent))
-         (combined   (remove-if (lambda (s) (string-equal +separator+ s))
+         (combined   (remove-if (lambda (s)
+                                  (or (string-equal +separator+ s)
+                                      (string-equal "" s)))
                                 (mapcar #'ensure-string (cons child components))))
          (final      (car (last combined)))
          (rest       (butlast combined))
@@ -253,6 +260,7 @@ filesystem."
          (par-comps  (components parent)))
     (make-pathname :name (base final)
                    :type (extension final)
+                   :version :newest
                    :directory (cons abs-or-rel
                                     (append (if (absolutep parent)
                                                 (cdr par-comps)
