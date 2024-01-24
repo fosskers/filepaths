@@ -302,7 +302,8 @@ filesystem."
 (defun join (parent child &rest components)
   "Combine two or more components together."
   (let* ((parent     (ensure-path parent))
-         (combined   (mapcar #'ensure-string (cons child components)))
+         (combined   (remove-if (lambda (s) (string-equal "/" s))
+                                (mapcar #'ensure-string (cons child components))))
          (final      (car (last combined)))
          (rest       (butlast combined))
          (abs-or-rel (if (absolutep parent) :absolute :relative))
@@ -321,6 +322,10 @@ filesystem."
 (join #p"/bar/baz/" #p"foo.json")
 #+nil
 (join #p"/bar/baz" #p"foo.json")
+#+nil
+(join "/foo" "" "bar" "/" "baz" "test.json")
+#+nil
+(join "/foo" "/") ;; Expected to fail.
 
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
