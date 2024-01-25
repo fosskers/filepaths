@@ -70,7 +70,7 @@
 
 (declaim (ftype (function ((or pathname string)) boolean) absolutep))
 (defun absolutep (path)
-  "Yields T when the given PATH a full, absolute path."
+  "Yields T when the given PATH is a full, absolute path."
   (if (pathnamep path)
       (eq :absolute (car (pathname-directory path)))
       (and (< 0 (length path))
@@ -81,7 +81,7 @@
 
 (declaim (ftype (function ((or pathname string)) boolean) relativep))
 (defun relativep (path)
-  "Yields T when the given PATH a relative one."
+  "Yields T when the given PATH is a relative one."
   (not (absolutep path)))
 
 #+nil

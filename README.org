@@ -67,9 +67,10 @@ Is the given PATH an empty string?
 
 #+RESULTS:
 : T
+
 *** absolutep, relativep
 
-Yields T when the given PATH a full, absolute path.
+Yields T when the given PATH is a full, absolute path.
 
 #+begin_src lisp :exports both
 (filepaths:absolutep "/home/colin/foo.txt")
@@ -78,7 +79,7 @@ Yields T when the given PATH a full, absolute path.
 #+RESULTS:
 : T
 
-Yields T when the given PATH a relative one.
+Yields T when the given PATH is a relative one.
 
 #+begin_src lisp :exports both
 (filepaths:relativep #p"bar/foo.txt")
