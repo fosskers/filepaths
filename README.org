@@ -33,7 +33,8 @@ communicating with the filesystem to test if files exist, etc.
 
 * Installation
 
-This library has no external dependencies. It only uses standard library functionality.
+This library is available on [[https://ultralisp.org/projects/fosskers/filepaths][Ultralisp]]. It uses only standard library functinos
+and has no external dependencies.
 
 * Usage
 
