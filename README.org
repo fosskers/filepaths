@@ -33,12 +33,13 @@ communicating with the filesystem to test if files exist, etc.
 
 * Installation
 
-This library is available on [[https://ultralisp.org/projects/fosskers/filepaths][Ultralisp]]. It uses only standard library functinos
+This library is available on [[https://ultralisp.org/projects/fosskers/filepaths][Ultralisp]]. It uses only standard library functions
 and has no external dependencies.
 
 * Usage
 
-It is recommended that you import this library with the nickname =path= or =p=.
+It is recommended that you import this library with the nickname =path= or =p=,
+although the usage examples further down all use the full name, =filepaths=.
 
 #+begin_src lisp
 (:local-nicknames (:p :filepaths))
@@ -111,7 +112,8 @@ Are the final components of a PATH some given CHILD?
 
 *** directoryp
 
-Yields T if the PATH represents a directory.
+Yields T if the PATH represents a directory. It only tests for structure; the
+filesystem isn't probed.
 
 #+begin_src lisp :exports both
 (filepaths:directoryp #p"/foo/bar/")
