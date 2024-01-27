@@ -262,10 +262,11 @@ filesystem."
                    :type (extension final)
                    :version :newest
                    :directory (cons abs-or-rel
-                                    (append (if (absolutep parent)
-                                                (cdr par-comps)
-                                                par-comps)
-                                            rest)))))
+                                    (mapcar #'keyword-if-special
+                                            (append (if (absolutep parent)
+                                                        (cdr par-comps)
+                                                        par-comps)
+                                                    rest))))))
 
 #+nil
 (join "/foo" "bar" "baz" "test.json")
@@ -276,18 +277,20 @@ filesystem."
   (if (emptyp path)
       '()
       (let* ((path (ensure-path path))
+             (comp (mapcar #'string-if-keyword (cdr (pathname-directory path))))
              (list (if (directoryp path)
-                       (cdr (pathname-directory path))
+                       comp
                        (let* ((ext  (extension path))
                               (file (if ext (concatenate 'string (base path) "." ext) (base path))))
-                         (append (cdr (pathname-directory path))
-                                 (list file))))))
+                         (append comp (list file))))))
         (if (absolutep path)
             (cons "/" list)
             list))))
 
 #+nil
 (components "/foo/bar/baz.json")
+#+nil
+(components "/foo/bar/.././../baz/stuff.json")
 
 (declaim (ftype (function (list) pathname) from-list))
 (defun from-list (list)
@@ -359,3 +362,26 @@ or empty string instead.")
   (:report (lambda (condition stream)
              (declare (ignore condition))
              (format stream "The filesystem root has no parent."))))
+
+;; --- Utilities --- ;;
+
+(declaim (ftype (function ((or string keyword)) string) string-if-keyword))
+(defun string-if-keyword (item)
+  "There are certain keywords that represent special path components. These need to
+be converted back into their original string representations if present."
+  (cond ((or (eq item :up) (eq item :back)) "..")
+        ((eq item :wild) "*")
+        ((eq item :wild-inferiors) "**")
+        (t item)))
+
+#+nil
+(string-if-keyword :up)
+
+(declaim (ftype (function (string) (or string keyword)) keyword-if-special))
+(defun keyword-if-special (item)
+  "Like `string-if-keyword', certain strings need to be converted to keywords
+before being stored in the `:directory' portion of a pathname."
+  (cond ((string-equal ".." item) :up)
+        ((string-equal "**" item) :wild-inferiors)
+        ((string-equal "*" item)  :wild)
+        (t item)))

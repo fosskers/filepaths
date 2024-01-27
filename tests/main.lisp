@@ -74,6 +74,8 @@
   (is equal #p"foo/bar/baz" (p:from-list '("foo" "bar" "baz")))
   (let ((path #p"/foo/bar/baz/file.txt"))
     (is equal path (p:from-list (p:components path))))
+  (let ((path #p"/foo/bar/.././../baz/stuff.json"))
+    (is equal path (p:from-list (p:components path))))
   (let ((path #p"/foo/bar/baz/"))
     (is equal path (p:ensure-directory path)))
   (is equal #p"/foo/bar/baz/" (p:ensure-directory "/foo/bar/baz"))
