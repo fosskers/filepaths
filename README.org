@@ -351,5 +351,6 @@ circumstances:
 
 * See Also
 
+- https://shinmera.github.io/pathname-utils/
 - https://codeberg.org/fourier/ppath
 - https://quickdocs.org/uiop
