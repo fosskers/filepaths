@@ -29,6 +29,8 @@ communicating with the filesystem to test if files exist, etc.
 
 #+begin_quote
 ✅ _This library has been confirmed to work with SBCL, ECL, and ABCL._
+
+⚠ CCL support is partial due to [[https://github.com/Clozure/ccl/issues/477][a bug]].
 #+end_quote
 
 * Installation
