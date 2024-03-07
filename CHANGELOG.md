@@ -1,5 +1,11 @@
 # filepaths
 
+## 0.1.2 (2024-03-07)
+
+#### Fixed
+
+- Arguments to `join` can now be composite themselves, like: `(join "/foo/bar" "baz/test.json")`
+
 ## 0.1.1 (2024-01-27)
 
 #### Fixed
