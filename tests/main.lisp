@@ -32,6 +32,7 @@
   (is equal #p"/bar/baz/foo.json" (p:join #p"/bar/baz" #p"foo.json"))
   (is equal #p"/foo/bar/baz/test.json" (p:join "/foo" "" "bar" "/" "baz" "test.json"))
   (is equal #p"/bar/baz/test.json" (p:join "/"  "bar" "baz" "test.json"))
+  (is equal #p"/foo/bar/baz/test.json" (p:join "/foo/bar" "baz/test.json"))
   ;; Naughty under CCL.
   (is equal #p"/foo/bar/.././../baz/stuff.json" (p:join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json"))
   (fail (p:join "/foo" "/"))

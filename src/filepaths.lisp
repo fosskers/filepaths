@@ -253,7 +253,7 @@ filesystem."
          (combined   (remove-if (lambda (s)
                                   (or (string-equal +separator+ s)
                                       (string-equal "" s)))
-                                (mapcar #'ensure-string (cons child components))))
+                                (mapcan #'components (cons child components))))
          (final      (car (last combined)))
          (rest       (butlast combined))
          (abs-or-rel (if (absolutep parent) :absolute :relative))
@@ -270,6 +270,8 @@ filesystem."
 
 #+nil
 (join "/foo" "bar" "baz" "test.json")
+#+nil
+(join "/foo/bar" "baz/test.json")
 
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
