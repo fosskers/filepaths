@@ -31,6 +31,7 @@ communicating with the filesystem to test if files exist, etc.
 ✅ _This library fully supports SBCL and ECL._
 
 ⚠ CCL support is partial due to [[https://github.com/Clozure/ccl/issues/477][a bug]].
+
 ⚠ ABCL support is partial due to [[https://github.com/armedbear/abcl/issues/672][a bug]].
 #+end_quote
 
