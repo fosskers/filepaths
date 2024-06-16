@@ -111,7 +111,7 @@ filesystem."
   (let ((b (pathname-name path)))
     (if (not b)
         (error 'no-filename :path path)
-        b)))
+        (string-if-keyword-impl-specific b))))
 
 #+nil
 (base "/foo/bar/baz.txt")
@@ -257,8 +257,12 @@ filesystem."
          (final      (car (last combined)))
          (rest       (butlast combined))
          (abs-or-rel (if (absolutep parent) :absolute :relative))
-         (par-comps  (components parent)))
-    (make-pathname :name (base final)
+         (par-comps  (components parent))
+         (final-base (base final)))
+    (make-pathname :name (cond
+                           #+sbcl
+                           ((string-equal "**" final-base) (sbcl-wildcard))
+                           (t (keyword-if-special final-base)))
                    :type (extension final)
                    :version :newest
                    :directory (cons abs-or-rel
@@ -268,6 +272,8 @@ filesystem."
                                                         par-comps)
                                                     rest))))))
 
+#+nil
+(join "/foo" "bar" "**" "*.json")
 #+nil
 (join "/foo" "bar" "baz" "test.json")
 #+nil
@@ -367,6 +373,16 @@ or empty string instead.")
 
 ;; --- Utilities --- ;;
 
+(declaim (ftype (function (t) string) string-if-keyword-impl-specific))
+(defun string-if-keyword-impl-specific (item)
+  "Like `string-if-keyword' but with special consideration for implementations.
+Assumed to be used internally within `base' to account for when the file base is
+a wildcard character."
+  (cond
+    #+sbcl
+    ((sb-impl::pattern-p item) "**") ; FIXME 2024-06-16 Actually check the contents.
+    (t (string-if-keyword item))))
+
 (declaim (ftype (function ((or string keyword)) string) string-if-keyword))
 (defun string-if-keyword (item)
   "There are certain keywords that represent special path components. These need to
@@ -387,3 +403,8 @@ before being stored in the `:directory' portion of a pathname."
         ((string-equal "**" item) :wild-inferiors)
         ((string-equal "*" item)  :wild)
         (t item)))
+
+#+sbcl
+(defun sbcl-wildcard ()
+  "A SBCL-specific pattern type created when a ** appears in a path."
+  (sb-impl::make-pattern '(:multi-char-wild :multi-char-wild)))
