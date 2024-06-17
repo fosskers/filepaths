@@ -115,6 +115,8 @@ filesystem."
 
 #+nil
 (base "/foo/bar/baz.txt")
+#+nil
+(base #p"/foo/bar/ゆびわ.txt")
 
 (declaim (ftype (function ((or pathname string) string) pathname) with-base))
 (defun with-base (path new)
@@ -286,18 +288,23 @@ filesystem."
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
   "Every component of a PATH broken up as a list."
-  (if (emptyp path)
-      '()
-      (let* ((path (ensure-path path))
-             (comp (mapcar #'string-if-keyword (cdr (pathname-directory path))))
-             (list (if (directoryp path)
-                       comp
-                       (let* ((ext  (extension path))
-                              (file (if ext (concatenate 'string (base path) "." ext) (base path))))
-                         (append comp (list file))))))
-        (if (absolutep path)
-            (cons "/" list)
-            list))))
+  (cond ((emptyp path) '())
+        ;; HACK 2024-06-17 Until ECL/Clasp support `**' in `:name' position.
+        ;;
+        ;; And not even a good hack, since it can be broken in cases where the
+        ;; `**' comes at the end.
+        #+(or ecl clasp)
+        ((and (stringp path) (string-equal "**" path)) '("**"))
+        (t (let* ((path (ensure-path path))
+                  (comp (mapcar #'string-if-keyword (cdr (pathname-directory path))))
+                  (list (if (directoryp path)
+                            comp
+                            (let* ((ext  (extension path))
+                                   (file (if ext (concatenate 'string (base path) "." ext) (base path))))
+                              (append comp (list file))))))
+             (if (absolutep path)
+                 (cons "/" list)
+                 list)))))
 
 #+nil
 (components "/foo/bar/baz.json")
