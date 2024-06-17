@@ -27,13 +27,15 @@ There are many more functions available.
 Note that this library is currently _Unix only_ and doesn't offer functions for
 communicating with the filesystem to test if files exist, etc.
 
-#+begin_quote
-✅ _This library fully supports SBCL and ECL._
+* Compatibility
 
-⚠ CCL support is partial due to [[https://github.com/Clozure/ccl/issues/477][a bug]].
-
-⚠ ABCL support is partial due to [[https://github.com/armedbear/abcl/issues/672][a bug]].
-#+end_quote
+| Compiler | ~**.json~ | Verbatum ~..~ | Unicode Paths |
+|----------+---------+-------------+---------------|
+| SBCL     | Yes     | Yes         | Yes           |
+| ECL      | [[https://gitlab.com/embeddable-common-lisp/ecl/-/issues/751][No]]      | Yes         | Yes           |
+| ABCL     | Yes     | [[https://github.com/armedbear/abcl/issues/672][No]]          | Yes           |
+| CCL      | Yes     | [[https://github.com/Clozure/ccl/issues/477][No]]          | Yes           |
+| Clasp    | [[https://github.com/clasp-developers/clasp/issues/1594][No]]      | Yes         | [[https://github.com/clasp-developers/clasp/issues/1595][No]]            |
 
 * Installation
 

@@ -33,6 +33,7 @@
   (is equal #p"/foo/bar/baz/test.json" (p:join "/foo" "" "bar" "/" "baz" "test.json"))
   (is equal #p"/bar/baz/test.json" (p:join "/"  "bar" "baz" "test.json"))
   (is equal #p"/foo/bar/baz/test.json" (p:join "/foo/bar" "baz/test.json"))
+  #-clasp
   (is equal #p"/foo/**.json" (p:join "/foo" "**.json"))
   (is equal #p"/foo/**/*.json" (p:join "/foo" "**" "*.json"))
   ;; Naughty under CCL.
@@ -46,6 +47,7 @@
   (is equal "ゆびわ" (p:base "/foo/bar/ゆびわ.txt"))
   (is equal "baz.txt" (p:base "/foo/bar/baz.txt.zip"))
   (is equal "*" (p:base "/foo/bar/*.zip"))
+  #-clasp
   (is equal "**" (p:base "/foo/bar/**.zip"))
   (fail (p:base "/foo/bar/"))
   (is equal #p"/foo/bar/jack.txt" (p:with-base "/foo/bar/baz.txt" "jack"))
