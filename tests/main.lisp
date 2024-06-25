@@ -44,7 +44,7 @@
 (define-test "Component Access"
   :parent suite
   (is equal "baz" (p:base "/foo/bar/baz.txt"))
-  (is equal "ゆびわ" (p:base "/foo/bar/ゆびわ.txt"))
+  (is equal "ゆびわ" (p:base #p"/foo/bar/ゆびわ.txt"))
   (is equal "baz.txt" (p:base "/foo/bar/baz.txt.zip"))
   (is equal "*" (p:base "/foo/bar/*.zip"))
   #-(or clasp ecl)
