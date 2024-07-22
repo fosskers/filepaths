@@ -36,7 +36,7 @@
   #-(or clasp ecl)
   (is equal #p"/foo/**.json" (p:join "/foo" "**.json"))
   (is equal #p"/foo/**/*.json" (p:join "/foo" "**" "*.json"))
-  ;; Naughty under CCL.
+  ;; Naughty under CCL and Allegro.
   (is equal #p"/foo/bar/.././../baz/stuff.json" (p:join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json"))
   (fail (p:join "/foo" "/"))
   (fail (p:join "/foo" "")))

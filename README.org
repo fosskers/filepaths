@@ -36,6 +36,7 @@ communicating with the filesystem to test if files exist, etc.
 | ABCL     | Yes     | [[https://github.com/armedbear/abcl/issues/672][No]]          | Yes           |
 | CCL      | Yes     | [[https://github.com/Clozure/ccl/issues/477][No]]          | Yes           |
 | Clasp    | [[https://github.com/clasp-developers/clasp/issues/1594][No]]      | Yes         | Yes (2.7)     |
+| Allegro  | Yes     | No          | Yes           |
 
 * Installation
 

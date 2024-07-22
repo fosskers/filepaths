@@ -264,9 +264,7 @@ filesystem."
     (make-pathname :name (cond
                            #+sbcl
                            ((string-equal "**" final-base) (sbcl-wildcard))
-                           #+abcl
-                           ((string-equal "**" final-base) final-base)
-                           #+ccl
+                           #+(or abcl ccl allegro)
                            ((string-equal "**" final-base) final-base)
                            (t (keyword-if-special final-base)))
                    :type (extension final)
