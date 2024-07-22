@@ -1,5 +1,11 @@
 # filepaths
 
+## 0.1.3 (2024-07-22)
+
+#### Fixed
+
+- A minor issue involving `**` when used with Allegro.
+
 ## 0.1.2 (2024-03-07)
 
 #### Fixed

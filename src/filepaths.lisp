@@ -277,7 +277,16 @@ filesystem."
                                                     rest))))))
 
 #+nil
+(join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json")
+#+nil
+#p"/foo/bar/.././../baz/stuff.json"
+
+#+nil
 (join "/foo" "bar" "**" "*.json")
+
+#+nil
+(join "/foo" "bar" "**.json")
+
 #+nil
 (join "/foo" "bar" "baz" "test.json")
 #+nil
@@ -355,6 +364,18 @@ filesystem."
 (defun from-string (s)
   "Convert a string into a proper filepath object."
   (pathname s))
+
+#+nil
+(join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json")
+
+#+nil
+(pathname "/foo/bar/.././../baz/test.json")
+
+#+nil
+(pathname "/foo/bar/../baz/test.json")
+
+#+nil
+#p"/foo/bar/.././../baz/test.json"
 
 ;; --- Conditions --- ;;
 
