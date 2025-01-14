@@ -1,5 +1,5 @@
 (defsystem "filepaths"
-  :version "0.1.2"
+  :version "0.1.3"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "LGPL-3.0-only"
   :depends-on ()
