@@ -1,0 +1,17 @@
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Vend testing
+    steps:
+      - name: Clone the Project
+        uses: actions/checkout@v4
+
+      - name: Test Common Lisp
+        uses: fosskers/cl-action@v0.0.6
+        with:
+          compiler: "sbcl"
