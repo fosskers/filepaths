@@ -1,0 +1,19 @@
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Tests
+    steps:
+      - name: Clone the Project
+        uses: actions/checkout@v4
+
+      - name: Set up Common Lisp
+        uses: fosskers/common-lisp@v1
+
+      - name: Test
+        run: |
+          vend test
