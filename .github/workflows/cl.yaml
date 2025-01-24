@@ -3,6 +3,7 @@ on:
     branches: [master]
   pull_request:
 
+# Trigger CI
 jobs:
   test:
     runs-on: ubuntu-latest
