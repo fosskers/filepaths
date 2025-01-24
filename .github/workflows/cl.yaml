@@ -6,12 +6,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Vend testing
+    name: Unit Tests
     steps:
       - name: Clone the Project
         uses: actions/checkout@v4
 
-      - name: Test Common Lisp
-        uses: fosskers/cl-action@v0.0.6
-        with:
-          compiler: "abcl"
+      - name: Install Vend
+        uses: fosskers/common-lisp@v0.0.7
+
+      - name: Test
+        run: |
+          vend test
