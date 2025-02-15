@@ -1,7 +1,5 @@
 #+title: filepaths
 
-(This README is best viewed on [[https://codeberg.org/fosskers/filepaths][Codeberg]]).
-
 Inspired by [[https://github.com/vindarel/cl-str][str]], this library offers modern and consistent filepath manipulation
 for Common Lisp.
 
@@ -32,10 +30,10 @@ communicating with the filesystem to test if files exist, etc.
 - [[#installation][Installation]]
 - [[#usage][Usage]]
   - [[#structural-tests][Structural Tests]]
-    - [[#rootp-emptyp][rootp, emptyp]]
-    - [[#absolutep-relativep][absolutep, relativep]]
-    - [[#starts-with-p-ends-with-p][starts-with-p, ends-with-p]]
-    - [[#directoryp][directoryp]]
+    - [[#root-empty][root?, empty?]]
+    - [[#absolute-relative][absolute?, relative?]]
+    - [[#starts-with-ends-with][starts-with?, ends-with?]]
+    - [[#directory][directory?]]
   - [[#construction][Construction]]
     - [[#join][join]]
   - [[#component-access][Component Access]]
@@ -81,12 +79,12 @@ Note that nearly every function here can be passed either a =pathname= or a
 
 ** Structural Tests
 
-*** rootp, emptyp
+*** root?, empty?
 
 Is the given PATH the root directory?
 
 #+begin_src lisp :exports both
-(filepaths:rootp #p"/")
+(filepaths:root? #p"/")
 #+end_src
 
 #+RESULTS:
@@ -95,18 +93,18 @@ Is the given PATH the root directory?
 Is the given PATH an empty string?
 
 #+begin_src lisp :exports both
-(filepaths:emptyp #p"")
+(filepaths:empty? #p"")
 #+end_src
 
 #+RESULTS:
 : T
 
-*** absolutep, relativep
+*** absolute?, relative?
 
 Yields T when the given PATH is a full, absolute path.
 
 #+begin_src lisp :exports both
-(filepaths:absolutep "/home/colin/foo.txt")
+(filepaths:absolute? "/home/colin/foo.txt")
 #+end_src
 
 #+RESULTS:
@@ -115,18 +113,18 @@ Yields T when the given PATH is a full, absolute path.
 Yields T when the given PATH is a relative one.
 
 #+begin_src lisp :exports both
-(filepaths:relativep #p"bar/foo.txt")
+(filepaths:relative? #p"bar/foo.txt")
 #+end_src
 
 #+RESULTS:
 : T
 
-*** starts-with-p, ends-with-p
+*** starts-with?, ends-with?
 
 Are the initial components of a PATH some BASE?
 
 #+begin_src lisp :exports both
-(filepaths:starts-with-p #p"/foo/bar/baz/zing.json" "/foo/bar")
+(filepaths:starts-with? #p"/foo/bar/baz/zing.json" "/foo/bar")
 #+end_src
 
 #+RESULTS:
@@ -135,26 +133,26 @@ Are the initial components of a PATH some BASE?
 Are the final components of a PATH some given CHILD?
 
 #+begin_src lisp :exports both
-(filepaths:ends-with-p #p"/foo/bar/baz/zing.json" "baz/zing.json")
+(filepaths:ends-with? #p"/foo/bar/baz/zing.json" "baz/zing.json")
 #+end_src
 
 #+RESULTS:
 : T
 
-*** directoryp
+*** directory?
 
 Yields T if the PATH represents a directory. It only tests for structure; the
 filesystem isn't probed.
 
 #+begin_src lisp :exports both
-(filepaths:directoryp #p"/foo/bar/")
+(filepaths:directory? #p"/foo/bar/")
 #+end_src
 
 #+RESULTS:
 : T
 
 #+begin_src lisp :exports both
-(filepaths:directoryp #p"/foo/bar/baz.txt")
+(filepaths:directory? #p"/foo/bar/baz.txt")
 #+end_src
 
 #+RESULTS:

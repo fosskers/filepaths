@@ -1,5 +1,11 @@
 # filepaths
 
+## Unreleased
+
+#### Added
+
+- `?`-suffixed aliases for the various predicate functions.
+
 ## 0.1.3 (2024-07-22)
 
 #### Fixed
