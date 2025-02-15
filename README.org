@@ -27,6 +27,30 @@ There are many more functions available.
 Note that this library is currently _Unix only_ and doesn't offer functions for
 communicating with the filesystem to test if files exist, etc.
 
+* Table of Contents :TOC_5_gh:noexport:
+- [[#compatibility][Compatibility]]
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+  - [[#structural-tests][Structural Tests]]
+    - [[#rootp-emptyp][rootp, emptyp]]
+    - [[#absolutep-relativep][absolutep, relativep]]
+    - [[#starts-with-p-ends-with-p][starts-with-p, ends-with-p]]
+    - [[#directoryp][directoryp]]
+  - [[#construction][Construction]]
+    - [[#join][join]]
+  - [[#component-access][Component Access]]
+    - [[#base-with-base][base, with-base]]
+    - [[#name-with-name][name, with-name]]
+    - [[#parent-with-parent][parent, with-parent]]
+    - [[#extension-with-extension-add-extension-drop-extension][extension, with-extension, add-extension, drop-extension]]
+  - [[#conversion][Conversion]]
+    - [[#components-from-list][components, from-list]]
+    - [[#ensure-directory-ensure-string-ensure-path][ensure-directory, ensure-string, ensure-path]]
+    - [[#to-string-from-string][to-string, from-string]]
+  - [[#conditions][Conditions]]
+- [[#further-work][Further Work]]
+- [[#see-also][See Also]]
+
 * Compatibility
 
 | Compiler | ~**.json~ | Verbatum ~..~ | Unicode Paths |
