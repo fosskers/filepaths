@@ -200,7 +200,7 @@ filesystem."
 #+nil
 (with-parent #p"/foo/bar/baz.json" #p"/zing")
 
-(declaim (ftype (function ((or pathname string)) (or simple-string null)) extension))
+(declaim (ftype (function ((or pathname string)) (or simple-string keyword null)) extension))
 (defun extension (path)
   "The extension of a given PATH."
   (pathname-type path))
@@ -209,6 +209,8 @@ filesystem."
 (extension #p"/foo/bar.json")
 #+nil
 (extension #p"/")
+#++
+(extension #p"*.*")
 
 (declaim (ftype (function ((or pathname string) string) pathname) with-extension))
 (defun with-extension (path ext)
@@ -307,6 +309,8 @@ filesystem."
 
 #+nil
 (join "/foo" "bar" "**.json")
+#++
+(join "/foo/" "*.*")
 
 #+nil
 (join "/foo" "bar" "baz" "test.json")
@@ -328,7 +332,10 @@ filesystem."
                   (list (if (directoryp path)
                             comp
                             (let* ((ext  (extension path))
-                                   (file (if ext (concatenate 'string (base path) "." ext) (base path))))
+                                   (file (if ext
+                                             (concatenate 'string (base path) "."
+                                                          (string-if-keyword ext))
+                                             (base path))))
                               (append comp (list file))))))
              (if (absolutep path)
                  (cons "/" list)
@@ -338,6 +345,8 @@ filesystem."
 (components "/foo/bar/baz.json")
 #+nil
 (components "/foo/bar/.././../baz/stuff.json")
+#++
+(components "foo/*.*")
 
 (declaim (ftype (function (list) pathname) from-list))
 (defun from-list (list)
