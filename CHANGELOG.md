@@ -1,6 +1,6 @@
 # filepaths
 
-## Unreleased
+## 1.0.1 (2025-05-12)
 
 #### Fixed
 
