@@ -369,11 +369,21 @@ filesystem."
         path
         (make-pathname :name nil
                        :type nil
-                       :directory (append (pathname-directory path)
+                       ;; NOTE: 2025-05-12 The result of `pathname-directory'
+                       ;; will be nil when a relative path with a single
+                       ;; component is given. In that case, we must help it
+                       ;; yield the correct structure to be appended to
+                       ;; immediately afterward.
+                       :directory (append (or (pathname-directory path)
+                                              '(:relative))
                                           (list (name path)))))))
 
 #+nil
 (ensure-directory #p"/foo/bar/baz")
+#+nil
+(ensure-directory "/foo")
+#+nil
+(ensure-directory "foo")
 
 (declaim (ftype (function ((or pathname string)) simple-string) ensure-string))
 (defun ensure-string (path)

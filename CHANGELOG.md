@@ -5,6 +5,7 @@
 #### Fixed
 
 - Support `*` (`:wild`) in extension position.
+- `ensure-directory` on a relative path with one component (e.g. `foo -> foo/`).
 
 ## 1.0.0 (2025-02-15)
 

@@ -89,6 +89,7 @@
     (is equal path (p:from-list (p:components path))))
   (let ((path #p"/foo/bar/baz/"))
     (is equal path (p:ensure-directory path)))
+  (is equal #p"foobar/" (p:ensure-directory "foobar"))
   (is equal #p"/foo/bar/baz/" (p:ensure-directory "/foo/bar/baz"))
   (is equal #p"/foo/bar/baz.json/" (p:ensure-directory "/foo/bar/baz.json"))
   (of-type string (p:ensure-string #p"/foo"))
