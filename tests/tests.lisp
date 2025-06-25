@@ -93,3 +93,8 @@
   (is equal #p"/foo/bar/baz.json/" (p:ensure-directory "/foo/bar/baz.json"))
   (of-type string (p:ensure-string #p"/foo"))
   (of-type pathname (p:ensure-path "/foo")))
+
+#+win32
+(define-test "Windows"
+  :parent suite
+  (is equal #p"Z:/foo/bar" (p:join #p"Z:/foo" "bar")))

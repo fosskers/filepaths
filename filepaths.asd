@@ -11,8 +11,6 @@
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "LGPL-3.0-only"
   :depends-on (:filepaths :parachute)
-  :components ((:module "tests"
-                :components
-                ((:file "main"))))
+  :components ((:module "tests" :components ((:file "tests"))))
   :description "Test system for filepaths"
   :perform (test-op (op c) (symbol-call :parachute :test :filepaths/tests)))
