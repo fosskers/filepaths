@@ -97,4 +97,11 @@
 #+win32
 (define-test "Windows"
   :parent suite
-  (is equal #p"Z:/foo/bar" (p:join #p"Z:/foo" "bar")))
+  (is equal #p"Z:/foo/bar" (p:join #p"Z:/foo" "bar"))
+  (is equal #p"Z:/foo/bar.json" (p:with-extension #p"Z:/foo/bar.txt" "json"))
+  (is equal #p"Z:/foo/bar" (p:drop-extension #p"Z:/foo/bar.txt"))
+  (is equal #p"Z:/foo/bar.tar.gz" (p:add-extension #p"Z:/foo/bar.tar" "gz"))
+  (is equal #p"Z:/zing/baz.json" (p:with-parent #p"C:/foo/bar/baz.json" #p"Z:/zing"))
+  (is equal #p"Z:/foo/bar/jack.json" (p:with-name #p"Z:/foo/bar/baz.txt" "jack.json"))
+  (is equal #p"Z:/foo/bar/jack.txt" (p:with-base #p"Z:/foo/bar/baz.txt" "jack"))
+  (is equal #p"Z:/foo/bar/baz/" (p:ensure-directory #p"Z:/foo/bar/baz")))
