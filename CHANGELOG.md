@@ -1,5 +1,11 @@
 # filepaths
 
+## Unreleased
+
+#### Fixed
+
+- `ensure-directory` on paths that end in `*` or `**`.
+
 ## 1.0.2 (2025-06-26)
 
 #### Added

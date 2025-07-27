@@ -383,7 +383,7 @@ filesystem."
                        ;; immediately afterward.
                        :directory (append (or (pathname-directory path)
                                               '(:relative))
-                                          (list (name path)))))))
+                                          (list (keyword-if-special (name path))))))))
 
 #+nil
 (ensure-directory #p"/foo/bar/baz")
@@ -391,6 +391,10 @@ filesystem."
 (ensure-directory "/foo")
 #+nil
 (ensure-directory "foo")
+#+nil
+(ensure-directory #p"/foo/bar/*")
+#+nil
+(ensure-directory #p"/foo/bar/**")
 
 (declaim (ftype (function ((or pathname string)) simple-string) ensure-string))
 (defun ensure-string (path)
