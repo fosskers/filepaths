@@ -281,8 +281,8 @@ filesystem."
   "Combine two or more components together."
   (let* ((parent     (ensure-path parent))
          (combined   (remove-if (lambda (s)
-                                  (or (string-equal +separator+ s)
-                                      (string-equal "" s)))
+                                  (or (string= +separator+ s)
+                                      (string= "" s)))
                                 (mapcan #'components (cons child components))))
          (final      (car (last combined)))
          (rest       (butlast combined))
@@ -291,9 +291,11 @@ filesystem."
          (final-base (base final)))
     (make-pathname :name (cond
                            #+sbcl
-                           ((string-equal "**" final-base) (sbcl-wildcard))
+                           ((string= "**" final-base) (sbcl-wildcard))
+                           #+cmucl
+                           ((string= "**" final-base) (cmucl-wildcard))
                            #+(or abcl ccl allegro)
-                           ((string-equal "**" final-base) final-base)
+                           ((string= "**" final-base) final-base)
                            (t (keyword-if-special final-base)))
                    :type (extension final)
                    :version :newest
@@ -306,6 +308,11 @@ filesystem."
                                                     rest))))))
 
 #+nil
+#p"**.json"
+
+#+nil
+(join "/foo" "**.json")
+#+nil
 (join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json")
 #+nil
 #p"/foo/bar/.././../baz/stuff.json"
@@ -315,6 +322,7 @@ filesystem."
 
 #+nil
 (join "/foo" "bar" "**.json")
+
 #++
 (join "/foo/" "*.*")
 
@@ -326,15 +334,15 @@ filesystem."
 (declaim (ftype (function ((or pathname string)) list) components))
 (defun components (path)
   "Every component of a PATH broken up as a list."
-  (cond ((emptyp path) '())
+  (cond ((empty? path) '())
         ;; HACK 2024-06-17 Until ECL/Clasp support `**' in `:name' position.
         ;;
         ;; And not even a good hack, since it can be broken in cases where the
         ;; `**' comes at the end.
         #+(or ecl clasp)
-        ((and (stringp path) (string-equal "**" path)) '("**"))
+        ((and (stringp path) (string= "**" path)) '("**"))
         (t (let* ((path (ensure-path path))
-                  (comp (mapcar #'string-if-keyword (cdr (pathname-directory path))))
+                  (comp (mapcar #'string-if-keyword (directory-parts path)))
                   (list (if (directoryp path)
                             comp
                             (let* ((ext  (extension path))
@@ -351,8 +359,40 @@ filesystem."
 (components "/foo/bar/baz.json")
 #+nil
 (components "/foo/bar/.././../baz/stuff.json")
+#+nil
+(components "/foo/bar/./baz/stuff.json")
 #++
 (components "foo/*.*")
+#+nil
+(components ".")
+#+nil
+(components "/.")
+#+nil
+(components "foo/.")
+#+nil
+#p"foo/."
+
+#+nil
+(pathname-directory #p"foo/bar/baz")
+#+nil
+(pathname-directory #p"./")
+
+(defun directory-parts (path)
+  "Light post-processing around `pathname-directory' to ensure sanity."
+  (let ((parts (pathname-directory path)))
+    (if (and (eq :relative (car parts))
+             (null (cdr parts)))
+        '(".")
+        (cdr parts))))
+
+#+nil
+(directory-parts #p"/foo/bar/baz.txt")
+#+nil
+(directory-parts #p"/.")
+#+nil
+(directory-parts #p"foo/.")
+#+nil
+(directory-parts #p"foo/./")
 
 (declaim (ftype (function (list) pathname) from-list))
 (defun from-list (list)
@@ -366,6 +406,8 @@ filesystem."
 
 #+nil
 (from-list '("foo" "bar" "baz"))
+#+nil
+(from-list '("foo" "bar" "." "baz"))
 
 (declaim (ftype (function ((or pathname string)) pathname) ensure-directory))
 (defun ensure-directory (path)
@@ -411,10 +453,31 @@ filesystem."
   "A PATH is definitely a pathname after this."
   (if (pathnamep path) path (from-string path)))
 
+#+nil
+(ensure-path ".")
+#+nil
+(ensure-path "/.")
+#+nil
+(ensure-path "foo/bar/.")
+#+nil
+(ensure-path "/foo/./bar/foo.txt")
+
+#p"foo/./bar/./baz"
+
+;; NOTE: 2025-08-17 Unfortunately, CMUCL can't be stopped from stripping "."
+;; components from the directory field. Even if I manually add them back in a
+;; `make-pathname', it still strips them. This effect trickles up to
+;; `components', which suffers if a dot exists in the input.
 (declaim (ftype (function (string) pathname) from-string))
 (defun from-string (s)
   "Convert a string into a proper filepath object."
   (pathname s))
+
+#+nil
+(from-string ".")
+
+#+nil
+(from-string "foo/.")
 
 #+nil
 (join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json")
@@ -462,6 +525,8 @@ a wildcard character."
   (cond
     #+sbcl
     ((sb-impl::pattern-p item) "**") ; FIXME 2024-06-16 Actually check the contents.
+    #+cmucl
+    ((lisp::pattern-p item) "**")
     (t (string-if-keyword item))))
 
 (declaim (ftype (function ((or string keyword)) string) string-if-keyword))
@@ -489,3 +554,8 @@ before being stored in the `:directory' portion of a pathname."
 (defun sbcl-wildcard ()
   "A SBCL-specific pattern type created when a ** appears in a path."
   (sb-impl::make-pattern '(:multi-char-wild :multi-char-wild)))
+
+#+cmucl
+(defun cmucl-wildcard ()
+  "A CMUCL-specific pattern type created when a ** appears in a path."
+  (lisp::make-pattern '(:multi-char-wild :multi-char-wild)))

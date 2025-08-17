@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+#### Added
+
+- CMUCL support.
+
 #### Fixed
 
 - `ensure-directory` on paths that end in `*` or `**`.
