@@ -289,10 +289,9 @@ filesystem."
          (abs-or-rel (if (absolutep parent) :absolute :relative))
          (par-comps  (components parent))
          (final-base (base final))
-         (dir?       (or (and (null components)
-                              (directory? child))
-                         (and components
-                              (directory? (car (last components)))))))
+         (dir?       (or (and (null components) (directory? child))
+                         (and components (directory? (car (last components))))))
+         (version    (if dir? nil :newest)))
     (make-pathname :name (cond
                            (dir? nil)
                            #+sbcl
@@ -303,7 +302,14 @@ filesystem."
                            ((string= "**" final-base) final-base)
                            (t (keyword-if-special final-base)))
                    :type (extension final)
-                   :version :newest
+                   ;; NOTE: 2025-12-29 The `equal` behaviour for pathnames is
+                   ;; different between SBCL and ECL. The latter seems to take
+                   ;; `:version' into account, while the former does not.
+                   ;;
+                   ;; Directories should have a NIL `:version', as that field is
+                   ;; intended to refer to versions of the file itself on the
+                   ;; filesystem; a meaningless notion for a directory.
+                   :version version
                    :device (pathname-device parent)
                    :directory (cons abs-or-rel
                                     (mapcar #'keyword-if-special
@@ -472,8 +478,6 @@ filesystem."
 (ensure-path "foo/bar/.")
 #+nil
 (ensure-path "/foo/./bar/foo.txt")
-
-#p"foo/./bar/./baz"
 
 ;; NOTE: 2025-08-17 Unfortunately, CMUCL can't be stopped from stripping "."
 ;; components from the directory field. Even if I manually add them back in a
