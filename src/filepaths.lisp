@@ -122,9 +122,9 @@ filesystem."
       (equal +separator+ (char path (1- (length path))))))
 
 #+nil
-(directoryp "/foo/bar/")
+(directory? "/foo/bar/")
 #+nil
-(directoryp "/foo/bar/baz.txt")
+(directory? "/foo/bar/baz.txt")
 
 (declaim (ftype (function ((or pathname string)) simple-string) base))
 (defun base (path)
@@ -288,8 +288,13 @@ filesystem."
          (rest       (butlast combined))
          (abs-or-rel (if (absolutep parent) :absolute :relative))
          (par-comps  (components parent))
-         (final-base (base final)))
+         (final-base (base final))
+         (dir?       (or (and (null components)
+                              (directory? child))
+                         (and components
+                              (directory? (car (last components)))))))
     (make-pathname :name (cond
+                           (dir? nil)
                            #+sbcl
                            ((string= "**" final-base) (sbcl-wildcard))
                            #+cmucl
@@ -305,7 +310,13 @@ filesystem."
                                             (append (if (absolutep parent)
                                                         (cdr par-comps)
                                                         par-comps)
-                                                    rest))))))
+                                                    rest
+                                                    (if dir?
+                                                        (list final)
+                                                        '())))))))
+
+#+nil
+(join "foo" "baz" "bar/")
 
 #+nil
 #p"**.json"

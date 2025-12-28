@@ -33,7 +33,13 @@
   (is equal #p"/foo/bar/baz/test.json" (p:join "/foo" "" "bar" "/" "baz" "test.json"))
   (is equal #p"/bar/baz/test.json" (p:join "/"  "bar" "baz" "test.json"))
   (is equal #p"/foo/bar/baz/test.json" (p:join "/foo/bar" "baz/test.json"))
+  ;; Last component is a directory.
+  ;; https://github.com/fosskers/filepaths/issues/2
+  (is equal #p"foo/bar" (p:join "foo" "bar"))
+  (is equal #p"foo/bar/" (p:join "foo" "bar/"))
+  (is equal #p"foo/bar/baz/" (p:join "foo" "bar/baz/"))
   ;; Naughty under CCL and Allegro.
+  #-(or allegro ccl abcl)
   (is equal #p"/foo/bar/.././../baz/stuff.json" (p:join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json"))
   (fail (p:join "/foo" "/"))
   (fail (p:join "/foo" "")))

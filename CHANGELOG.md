@@ -1,5 +1,11 @@
 # filepaths
 
+## Unreleased
+
+#### Fixed
+
+- `join`: Respect when the final path component indicates a directory.
+
 ## 1.0.3 (2025-08-17)
 
 #### Added
