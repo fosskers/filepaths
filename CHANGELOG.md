@@ -1,6 +1,8 @@
 # filepaths
 
-## Unreleased
+## 1.0.4 (2025-12-29)
+
+Merry Christmas and Happy New Year!
 
 #### Fixed
 
