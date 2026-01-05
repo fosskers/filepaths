@@ -276,21 +276,22 @@ filesystem."
 #+nil
 (add-extension #p"/foo/bar/baz.txt" "zip")
 
-(declaim (ftype (function ((or pathname string) (or pathname string) &rest (or pathname string)) pathname) join))
-(defun join (parent child &rest components)
-  "Combine two or more components together."
+(declaim (ftype (function ((or pathname string) &rest (or pathname string)) pathname) join))
+(defun join (parent &rest children)
+  "Combine one or more components together."
   (let* ((parent     (ensure-path parent))
-         (combined   (remove-if (lambda (s)
+         (cleaned    (remove-if (lambda (s)
                                   (or (string= +separator+ s)
                                       (string= "" s)))
-                                (mapcan #'components (cons child components))))
+                                (mapcan #'components children)))
+         (combined   (append (components parent) cleaned))
          (final      (car (last combined)))
          (rest       (butlast combined))
-         (abs-or-rel (if (absolutep parent) :absolute :relative))
-         (par-comps  (components parent))
+         (absolute?  (absolute? parent))
+         (abs-or-rel (if absolute? :absolute :relative))
          (final-base (base final))
-         (dir?       (or (and (null components) (directory? child))
-                         (and components (directory? (car (last components))))))
+         (dir?       (or (and (null cleaned) (directory? parent))
+                         (and cleaned (directory? (car (last children))))))
          (version    (if dir? nil :newest)))
     (make-pathname :name (cond
                            (dir? nil)
@@ -313,13 +314,10 @@ filesystem."
                    :device (pathname-device parent)
                    :directory (cons abs-or-rel
                                     (mapcar #'keyword-if-special
-                                            (append (if (absolutep parent)
-                                                        (cdr par-comps)
-                                                        par-comps)
-                                                    rest
-                                                    (if dir?
-                                                        (list final)
-                                                        '())))))))
+                                            (cond ((and dir? absolute?) (cdr combined))
+                                                  (absolute? (cdr rest))
+                                                  (dir? combined)
+                                                  (t rest)))))))
 
 #+nil
 (join "foo" "baz" "bar/")

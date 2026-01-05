@@ -162,7 +162,7 @@ structure; the filesystem isn't probed.
 
 *** join
 
-=join=: Combine two or more components together.
+=join=: Combine one or more components together.
 
 #+begin_src lisp :exports both
 (filepaths:join "/foo" "bar" "baz" "test.json")
@@ -170,6 +170,8 @@ structure; the filesystem isn't probed.
 
 #+RESULTS:
 : #P"/foo/bar/baz/test.json"
+
+The arguments can already be partial paths.
 
 #+begin_src lisp :exports both
 (filepaths:join #p"/bar/baz/" #p"foo.json")

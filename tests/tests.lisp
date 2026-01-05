@@ -41,8 +41,10 @@
   ;; Naughty under CCL and Allegro.
   #-(or allegro ccl abcl)
   (is equal #p"/foo/bar/.././../baz/stuff.json" (p:join "/" "foo" "bar" ".." "." ".." "baz" "stuff.json"))
-  (fail (p:join "/foo" "/"))
-  (fail (p:join "/foo" "")))
+  ;; Degenerate cases
+  (is equal #p"/foo" (p:join "/foo"))
+  (is equal #p"/foo" (p:join "/foo" "/"))
+  (is equal #p"/foo" (p:join "/foo" "")))
 
 (define-test "Wild Cards"
   :parent suite
